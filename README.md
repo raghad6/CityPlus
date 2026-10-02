@@ -5,6 +5,8 @@ A multi-tenant SaaS for monitoring and evaluating municipal development-plan pro
 
 Built from the Dura Municipality prototype: an **admin panel** for the municipality, a **staff portal** for departments and partners, and a **platform panel** for you (the SaaS owner) to onboard municipalities.
 
+**Docs:** [Architecture](ARCHITECTURE.md) · [Every file explained](docs/FILES.md) · [Architecture roadmap](docs/ROADMAP.md)
+
 ---
 
 ## التشغيل السريع · Quick start (Docker)
@@ -30,6 +32,7 @@ Then open **http://localhost:3000**. Demo accounts (created because `SEED_DEMO=t
 ## التطوير المحلي · Local development
 
 Requirements: Node 20+ and PostgreSQL 16 (or `docker compose up -d db`).
+No Docker or PostgreSQL installed? Run `node .local-postgres/start.mjs` (after `npm --prefix .local-postgres install`) for a local database on port 5432; the default `apps/api/.env.example` settings already match it.
 
 ```bash
 # 1) API

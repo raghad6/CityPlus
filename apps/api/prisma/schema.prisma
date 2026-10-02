@@ -1,0 +1,226 @@
+// City+ — multi-tenant schema.
+// Every business record carries tenantId; the API always filters by the
+// tenant of the signed-in user, so municipalities never see each other's data.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN // platform owner — manages municipalities
+  ADMIN // municipality admin (المسؤول)
+  STAFF // department employee / external partner
+}
+
+enum UserStatus {
+  PENDING // signed up, waiting for admin approval
+  ACTIVE
+  DISABLED
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum Plan {
+  BASIC
+  STANDARD
+  PREMIUM
+}
+
+enum ProjectStatus {
+  NOT_STARTED // لم يبدأ
+  IN_PROGRESS // قيد التنفيذ
+  PARTIAL // منفذ جزئياً
+  COMPLETED // منجز
+  POSTPONED // مؤجل
+  STOPPED // متوقف
+  CANCELLED // ملغى
+}
+
+enum AchievementLevel {
+  EXCELLENT
+  GOOD
+  AVERAGE
+  WEAK
+}
+
+enum ReportStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Tenant {
+  id              String       @id @default(cuid())
+  name            String // Arabic name e.g. بلدية دورا
+  nameEn          String?
+  slug            String       @unique
+  city            String?
+  logoUrl         String?
+  status          TenantStatus @default(ACTIVE)
+  plan            Plan         @default(STANDARD)
+  maxUsers        Int          @default(50)
+  planYear        Int          @default(2025) // year of the development-plan matrix
+  requireApproval Boolean      @default(true) // staff reports need admin approval
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  users       User[]
+  departments Department[]
+  projects    Project[]
+  reports     Report[]
+  auditLogs   AuditLog[]
+}
+
+model User {
+  id           String     @id @default(cuid())
+  tenantId     String?
+  tenant       Tenant?    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name         String
+  email        String     @unique
+  phone        String?
+  passwordHash String
+  role         Role       @default(STAFF)
+  status       UserStatus @default(PENDING)
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  lastLoginAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  assignments ProjectAssignment[]
+  reports     Report[]            @relation("ReportAuthor")
+  reviews     Report[]            @relation("ReportReviewer")
+  auditLogs   AuditLog[]
+
+  @@index([tenantId])
+}
+
+model Department {
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name       String
+  nameEn     String?
+  isExternal Boolean  @default(false) // جهة خارجية
+  createdAt  DateTime @default(now())
+
+  users              User[]
+  primaryProjects    Project[]           @relation("PrimaryDepartment")
+  secondaryProjects  ProjectDepartment[]
+
+  @@unique([tenantId, name])
+}
+
+model Project {
+  id       String @id @default(cuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Step 1 — اسم ورقم المشروع (admin only)
+  programName     String // اسم البرنامج
+  programNumber   String? // رقم البرنامج
+  componentName   String // اسم مكون المشروع/البرنامج
+  componentNumber String? // رقم مكون المشروع
+  totalCostK      Decimal? @db.Decimal(14, 2) // التكلفة التقديرية لكامل المشروع ×1000$
+  yearCostK       Decimal? @db.Decimal(14, 2) // التكلفة التقديرية للسنة ×1000$
+  planYear        Int
+  departmentId    String?
+  department      Department? @relation("PrimaryDepartment", fields: [departmentId], references: [id], onDelete: SetNull)
+  startDate       DateTime?
+  dueDate         DateTime?
+
+  // Step 2 — المتابعة والتقييم
+  status              ProjectStatus @default(NOT_STARTED)
+  completionPercent   Int           @default(0)
+  nonExecutionReasons String? // أسباب عدم التنفيذ / الإلغاء / التوقيف / الإضافة
+  spentK              Decimal?      @db.Decimal(14, 2) // ما تم صرفه خلال العام
+  activities          String? // النشاط والتكلفة ومؤشر القياس
+
+  // Step 3 — تقييم مستوى الإنجاز
+  achievementLevel AchievementLevel?
+  kpiName          String? // مؤشر القياس
+  kpiTarget        String?
+  kpiActual        String?
+  evaluationNotes  String?
+
+  // Step 4 — الجهة الممولة
+  localBudgetLine      String? // الهيئة المحلية: بند الموازنة
+  localContributionK   Decimal? @db.Decimal(14, 2)
+  partnerName          String? // غير الهيئة المحلية / الشريك
+  partnerContributionK Decimal? @db.Decimal(14, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  departments ProjectDepartment[]
+  assignments ProjectAssignment[]
+  reports     Report[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, departmentId])
+}
+
+model ProjectDepartment {
+  projectId    String
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, departmentId])
+}
+
+model ProjectAssignment {
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([projectId, userId])
+}
+
+// A progress report submitted by staff for a project. The payload holds the
+// fields staff are allowed to change (steps 2–4). When approved (or when the
+// municipality does not require approval) the payload is applied to the project.
+model Report {
+  id          String       @id @default(cuid())
+  tenantId    String
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projectId   String
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User         @relation("ReportAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  status      ReportStatus @default(PENDING)
+  payload     Json
+  reviewerId  String?
+  reviewer    User?        @relation("ReportReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  reviewNote  String?
+  reviewedAt  DateTime?
+  createdAt   DateTime     @default(now())
+
+  @@index([tenantId, status])
+  @@index([projectId])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  tenantId   String?
+  tenant     Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String // e.g. project.create, report.approve
+  entityType String
+  entityId   String?
+  summary    String?
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+}

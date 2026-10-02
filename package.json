@@ -1,0 +1,13 @@
+{
+  "name": "cityplus",
+  "private": true,
+  "version": "1.0.0",
+  "description": "City+ - multi-tenant SaaS for monitoring municipal development-plan projects",
+  "scripts": {
+    "install:all": "npm --prefix apps/api install && npm --prefix apps/web install",
+    "db:setup": "npm --prefix apps/api run db:push && npm --prefix apps/api run seed",
+    "dev:api": "npm --prefix apps/api run dev",
+    "dev:web": "npm --prefix apps/web run dev",
+    "build": "npm --prefix apps/api run build && npm --prefix apps/web run build"
+  }
+}

@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cityplus
+      POSTGRES_PASSWORD: cityplus
+      POSTGRES_DB: cityplus
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cityplus"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: ./apps/api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://cityplus:cityplus@db:5432/cityplus
+      JWT_SECRET: ${JWT_SECRET:-please-change-this-secret}
+      JWT_EXPIRES_IN: 7d
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      SEED_DEMO: ${SEED_DEMO:-true}
+    ports:
+      - "4000:4000"
+
+  web:
+    build:
+      context: ./apps/web
+      args:
+        API_URL: http://api:4000
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:

@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-tap-highlight-color: transparent; }
+  body { @apply bg-ink-50 text-ink-900 antialiased; font-feature-settings: 'kern'; }
+  input[type='number']::-webkit-inner-spin-button { opacity: .4; }
+  /* Numbers & emails always read left-to-right */
+  input[type='email'], input[type='number'], input[type='date'] { direction: ltr; }
+  [dir='rtl'] input[type='email'], [dir='rtl'] input[type='number'] { text-align: right; }
+}
+
+@layer utilities {
+  .scrollbar-thin { scrollbar-width: thin; }
+}

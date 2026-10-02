@@ -1,0 +1,17 @@
+# Dependencies and build output
+node_modules
+dist
+.next
+*.tsbuildinfo
+
+# Secrets: never commit real env files (the .env.example templates are committed)
+.env
+.env.*
+!.env.example
+
+# Local development database (data files)
+.local-postgres/data
+
+# OS / logs
+.DS_Store
+*.log

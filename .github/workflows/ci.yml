@@ -1,0 +1,25 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: cityplus }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cityplus
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm --prefix apps/api install
+      - run: npm --prefix apps/api run build
+      - run: npm --prefix apps/api run db:push
+      - run: npm --prefix apps/api run seed
+      - run: npm --prefix apps/web install
+      - run: npx --prefix apps/web tsc -p apps/web --noEmit
+      - run: npm --prefix apps/web run build
