@@ -8,6 +8,7 @@ export const projectsApi = {
   create: (body: ProjectInput) => http.post<Project>('/projects', body),
   update: (id: string, body: ProjectInput) => http.patch<Project>(`/projects/${id}`, body),
   remove: (id: string) => http.del(`/projects/${id}`),
+  removeMany: (ids: string[]) => http.post<{ deleted: number }>('/projects/bulk-delete', { ids }),
   import: (file: File) => {
     const fd = new FormData();
     fd.append('file', file);

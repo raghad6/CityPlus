@@ -4,7 +4,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { AuthUser, CurrentUser, Roles, TenantId } from '../common/decorators';
-import { ProjectDto, UpdateProjectDto } from './projects.dto';
+import { BulkDeleteDto, ProjectDto, UpdateProjectDto } from './projects.dto';
 import { ProjectQuery, ProjectsService } from './projects.service';
 import { ProjectsExcelService } from './projects-excel.service';
 
@@ -59,6 +59,12 @@ export class ProjectsController {
   @Roles('ADMIN')
   update(@CurrentUser() user: AuthUser, @TenantId() _t: string, @Param('id') id: string, @Body() dto: UpdateProjectDto) {
     return this.projects.update(user, id, dto);
+  }
+
+  @Post('bulk-delete')
+  @Roles('ADMIN')
+  removeMany(@CurrentUser() user: AuthUser, @TenantId() _t: string, @Body() dto: BulkDeleteDto) {
+    return this.projects.removeMany(user, dto.ids);
   }
 
   @Delete(':id')

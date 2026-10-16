@@ -3,17 +3,20 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Download, FolderKanban, MessageSquareWarning, Plus, Search, Upload } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, FolderKanban, MessageSquareWarning, Plus, Search, Trash2, Upload } from 'lucide-react';
+import { toast } from 'sonner';
 import { cn } from '@/lib/cn';
 import { useI18n } from '@/lib/i18n';
 import { daysFromNow, date, money } from '@/lib/format';
-import { Button, Card, Empty, Input, Loading, PageHeader, ProgressLabel, Select } from '@/components/ui';
+import { Button, Card, ConfirmModal, Empty, Input, Loading, PageHeader, ProgressLabel, Select } from '@/components/ui';
 import { useDepartments } from '@/features/departments/hooks';
 import { projectsApi } from '@/features/projects/api';
-import { useProjects } from '@/features/projects/hooks';
+import { useDeleteProjects, useProjects } from '@/features/projects/hooks';
 import { isOpen, PROJECT_STATUSES } from '@/features/projects/types';
 import { ImportModal } from '@/features/projects/components/ImportModal';
 import { StatusBadge } from '@/features/projects/components/StatusBadge';
+
+const CHECKBOX = 'h-4 w-4 cursor-pointer rounded border-ink-300 text-brand-600 accent-brand-600';
 
 function ProjectsList() {
   const { t, n, lang } = useI18n();
@@ -21,6 +24,20 @@ function ProjectsList() {
   const params = useSearchParams();
   const { data: departments = [] } = useDepartments();
   const [importOpen, setImportOpen] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const deleteMany = useDeleteProjects({
+    onSuccess: (r) => {
+      toast.success(t('projects.deletedMany', { n: r.deleted }));
+      setSelected(new Set());
+      setConfirmOpen(false);
+    },
+  });
+  const toggle = (id: string) => setSelected((s) => {
+    const next = new Set(s);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
 
   const filters = {
     q: params.get('q') ?? '',
@@ -51,6 +68,13 @@ function ProjectsList() {
   const from = data ? (data.page - 1) * data.pageSize + 1 : 0;
   const to = data ? Math.min(data.page * data.pageSize, data.total) : 0;
   const { page: _p, sort: _s, ...exportFilters } = filters;
+  const pageIds = data?.items.map((p) => p.id) ?? [];
+  const allOnPage = pageIds.length > 0 && pageIds.every((id) => selected.has(id));
+  const toggleAllOnPage = () => setSelected((s) => {
+    const next = new Set(s);
+    pageIds.forEach((id) => (allOnPage ? next.delete(id) : next.add(id)));
+    return next;
+  });
 
   return (
     <>
@@ -97,6 +121,16 @@ function ProjectsList() {
         </div>
       </Card>
 
+      {selected.size > 0 && (
+        <Card className="mb-4 flex items-center justify-between gap-3 border-accent-200 bg-accent-50/60 px-4 py-2.5">
+          <span className="text-sm font-medium text-ink-800">{t('projects.selected', { n: selected.size })}</span>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())}>{t('projects.clearSelection')}</Button>
+            <Button variant="danger" size="sm" icon={<Trash2 className="h-4 w-4" />} onClick={() => setConfirmOpen(true)}>{t('projects.deleteSelected')}</Button>
+          </div>
+        </Card>
+      )}
+
       <Card className="overflow-hidden">
         {isLoading ? (
           <Loading />
@@ -114,6 +148,9 @@ function ProjectsList() {
               <table className="w-full text-sm">
                 <thead className="bg-ink-50 text-xs text-ink-500">
                   <tr>
+                    <th className="w-10 py-3 ps-4">
+                      <input type="checkbox" className={CHECKBOX} checked={allOnPage} onChange={toggleAllOnPage} aria-label={t('projects.selectAll')} />
+                    </th>
                     <th className="px-4 py-3 text-start font-medium">{t('projects.col.project')}</th>
                     <th className="px-4 py-3 text-start font-medium">{t('projects.col.department')}</th>
                     <th className="px-4 py-3 text-start font-medium">{t('projects.col.status')}</th>
@@ -127,7 +164,10 @@ function ProjectsList() {
                     const d = daysFromNow(p.dueDate);
                     const late = d !== null && d < 0 && isOpen(p.status);
                     return (
-                      <tr key={p.id} className="cursor-pointer hover:bg-ink-50/70" onClick={() => router.push(`/admin/projects/${p.id}`)}>
+                      <tr key={p.id} className={cn('cursor-pointer hover:bg-ink-50/70', selected.has(p.id) && 'bg-accent-50/50')} onClick={() => router.push(`/admin/projects/${p.id}`)}>
+                        <td className="w-10 py-3 ps-4" onClick={(e) => e.stopPropagation()}>
+                          <input type="checkbox" className={CHECKBOX} checked={selected.has(p.id)} onChange={() => toggle(p.id)} aria-label={t('projects.select')} />
+                        </td>
                         <td className="max-w-md px-4 py-3">
                           <div className="flex items-center gap-2">
                             {p.componentNumber && <span className="rounded bg-ink-100 px-1.5 py-0.5 text-[11px] font-medium text-ink-600" dir="ltr">{p.componentNumber}</span>}
@@ -158,8 +198,9 @@ function ProjectsList() {
             {/* Mobile cards */}
             <ul className="divide-y divide-ink-100 md:hidden">
               {data.items.map((p) => (
-                <li key={p.id}>
-                  <Link href={`/admin/projects/${p.id}`} className="block space-y-2 p-4">
+                <li key={p.id} className={cn('flex items-start gap-3 ps-4', selected.has(p.id) && 'bg-accent-50/50')}>
+                  <input type="checkbox" className={cn(CHECKBOX, 'mt-5')} checked={selected.has(p.id)} onChange={() => toggle(p.id)} aria-label={t('projects.select')} />
+                  <Link href={`/admin/projects/${p.id}`} className="block min-w-0 flex-1 space-y-2 py-4 pe-4">
                     <div className="flex items-start justify-between gap-2">
                       <div className="font-medium text-ink-900">{p.componentName}</div>
                       <StatusBadge status={p.status} />
@@ -185,6 +226,14 @@ function ProjectsList() {
         )}
       </Card>
       <ImportModal open={importOpen} onClose={() => setImportOpen(false)} />
+      <ConfirmModal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => deleteMany.mutate([...selected])}
+        loading={deleteMany.isPending}
+        title={t('projects.deleteManyTitle', { n: selected.size })}
+        body={t('projects.deleteManyBody')}
+      />
     </>
   );
 }
