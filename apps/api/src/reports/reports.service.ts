@@ -6,6 +6,7 @@ import { AuthUser } from '../common/decorators';
 import { plain } from '../common/util';
 import { PROGRESS_FIELDS, ProgressFieldsDto } from '../projects/projects.dto';
 import { REASON_REQUIRED_STATUSES, visibleProjects } from '../projects/project-rules';
+import { ProjectEventsService } from '../project-events/project-events.service';
 
 /**
  * Progress-report workflow: staff submit proposed changes, an admin approves (changes are copied onto
@@ -13,7 +14,7 @@ import { REASON_REQUIRED_STATUSES, visibleProjects } from '../projects/project-r
  */
 @Injectable()
 export class ReportsService {
-  constructor(private prisma: PrismaService, private audit: AuditService) {}
+  constructor(private prisma: PrismaService, private audit: AuditService, private events: ProjectEventsService) {}
 
   async submit(user: AuthUser, projectId: string, dto: ProgressFieldsDto) {
     const tenantId = user.tenantId!;
@@ -53,6 +54,7 @@ export class ReportsService {
       return r;
     });
     await this.audit.log(user, 'report.submit', 'Report', report.id, project.componentName);
+    if (autoApprove) this.events.scanSoon();
     return report;
   }
 
@@ -97,6 +99,7 @@ export class ReportsService {
       }),
     ]);
     await this.audit.log(user, 'report.approve', 'Report', id, report.project.componentName);
+    this.events.scanSoon();
     return { ok: true };
   }
 

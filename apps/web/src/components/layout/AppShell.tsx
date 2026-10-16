@@ -7,6 +7,7 @@ import { Globe, LogOut, Menu, UserRound, X } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useI18n } from '@/lib/i18n';
 import { useLogout, useMe } from '@/features/auth/hooks';
+import { NotificationBell } from '@/features/notifications/components/NotificationBell';
 import type { DictKey } from '@/lib/dict';
 import { Avatar, Spinner } from '@/components/ui';
 
@@ -133,7 +134,7 @@ export function AppShell({ nav, children, profileHref }: { nav: NavItem[]; child
   return (
     <div className="min-h-screen">
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 start-0 z-30 hidden w-64 lg:block">{sidebar}</aside>
+      <aside className="fixed inset-y-0 start-0 z-30 hidden w-64 lg:block print:hidden">{sidebar}</aside>
 
       {/* Mobile drawer */}
       {open && (
@@ -148,14 +149,15 @@ export function AppShell({ nav, children, profileHref }: { nav: NavItem[]; child
         </div>
       )}
 
-      <div className="lg:ps-64">
-        <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-ink-100 bg-white/90 px-4 backdrop-blur sm:px-6">
+      <div className="lg:ps-64 print:ps-0">
+        <header className="sticky top-0 z-20 flex h-14 print:hidden items-center gap-3 border-b border-ink-100 bg-white/90 px-4 backdrop-blur sm:px-6">
           <button onClick={() => setOpen(true)} className="rounded-lg p-1.5 text-ink-600 hover:bg-ink-100 lg:hidden" aria-label="menu">
             <Menu className="h-5 w-5" />
           </button>
           <div className="truncate text-sm font-medium text-ink-600">{me?.tenant ? n(me.tenant) : ''}</div>
           <div className="ms-auto flex items-center gap-1">
             <LangToggle />
+            {me?.tenant && <NotificationBell />}
             <Link href={profileHref} className="rounded-lg p-2 text-ink-600 hover:bg-ink-100" aria-label={t('common.profile')}>
               <UserRound className="h-5 w-5" />
             </Link>

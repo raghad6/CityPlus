@@ -40,4 +40,17 @@ export interface ProjectFilters {
 /** Body sent when creating or editing a project (built by the wizard). */
 export type ProjectInput = Record<string, unknown> & { extraDepartmentIds?: string[]; assigneeIds?: string[] };
 
-export interface ImportResult { created: number; errors: { row: number; message: string }[] }
+export interface ImportResult {
+  created: number;
+  /** Rows that matched an existing project and changed it. */
+  updated: number;
+  /** Rows that matched an existing project with nothing new. */
+  unchanged: number;
+  errors: { row: number; message: string }[];
+  sheet: string;
+  headerRow: number;
+  /** Sheet columns that were matched to a project field. */
+  matched: { column: string; field: string; label: string; labelEn: string }[];
+  /** Sheet columns that matched no field and were skipped. */
+  ignored: string[];
+}

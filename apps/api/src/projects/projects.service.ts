@@ -6,6 +6,7 @@ import { AuthUser } from '../common/decorators';
 import { plain } from '../common/util';
 import { ProjectDto, UpdateProjectDto } from './projects.dto';
 import { CLOSED_STATUSES, visibleProjects } from './project-rules';
+import { ProjectEventsService } from '../project-events/project-events.service';
 
 export interface ProjectQuery {
   q?: string;
@@ -27,7 +28,7 @@ export const listInclude = {
 
 @Injectable()
 export class ProjectsService {
-  constructor(private prisma: PrismaService, private audit: AuditService) {}
+  constructor(private prisma: PrismaService, private audit: AuditService, private events: ProjectEventsService) {}
 
   /** Turns the list filters (search, status, department, due date) into a database filter. */
   buildWhere(user: AuthUser, q: ProjectQuery): Prisma.ProjectWhereInput {
@@ -132,6 +133,7 @@ export class ProjectsService {
       },
     });
     await this.audit.log(user, 'project.create', 'Project', project.id, project.componentName);
+    this.events.scanSoon();
     return this.get(user, project.id);
   }
 
@@ -163,6 +165,7 @@ export class ProjectsService {
       }
     });
     await this.audit.log(user, 'project.update', 'Project', id, dto.componentName ?? existing.componentName);
+    this.events.scanSoon();
     return this.get(user, id);
   }
 
@@ -172,5 +175,16 @@ export class ProjectsService {
     await this.prisma.project.delete({ where: { id } });
     await this.audit.log(user, 'project.delete', 'Project', id, existing.componentName);
     return { ok: true };
+  }
+
+  /** Delete several projects; ids from another municipality are ignored. */
+  async removeMany(user: AuthUser, ids: string[]) {
+    const found = await this.prisma.project.findMany({
+      where: { id: { in: ids }, tenantId: user.tenantId! },
+      select: { id: true, componentName: true },
+    });
+    await this.prisma.project.deleteMany({ where: { id: { in: found.map((p) => p.id) } } });
+    for (const p of found) await this.audit.log(user, 'project.delete', 'Project', p.id, p.componentName);
+    return { deleted: found.length };
   }
 }

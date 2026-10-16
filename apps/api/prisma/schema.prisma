@@ -77,28 +77,33 @@ model Tenant {
   projects    Project[]
   reports     Report[]
   auditLogs   AuditLog[]
+
+  notifications  Notification[]
+  summaryReports SummaryReport[]
 }
 
 model User {
-  id           String     @id @default(cuid())
+  id           String      @id @default(cuid())
   tenantId     String?
-  tenant       Tenant?    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant       Tenant?     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   name         String
-  email        String     @unique
+  email        String      @unique
   phone        String?
   passwordHash String
-  role         Role       @default(STAFF)
-  status       UserStatus @default(PENDING)
+  role         Role        @default(STAFF)
+  status       UserStatus  @default(PENDING)
   departmentId String?
   department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
   lastLoginAt  DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
   assignments ProjectAssignment[]
   reports     Report[]            @relation("ReportAuthor")
   reviews     Report[]            @relation("ReportReviewer")
   auditLogs   AuditLog[]
+
+  notifications Notification[]
 
   @@index([tenantId])
 }
@@ -112,9 +117,9 @@ model Department {
   isExternal Boolean  @default(false) // جهة خارجية
   createdAt  DateTime @default(now())
 
-  users              User[]
-  primaryProjects    Project[]           @relation("PrimaryDepartment")
-  secondaryProjects  ProjectDepartment[]
+  users             User[]
+  primaryProjects   Project[]           @relation("PrimaryDepartment")
+  secondaryProjects ProjectDepartment[]
 
   @@unique([tenantId, name])
 }
@@ -129,8 +134,8 @@ model Project {
   programNumber   String? // رقم البرنامج
   componentName   String // اسم مكون المشروع/البرنامج
   componentNumber String? // رقم مكون المشروع
-  totalCostK      Decimal? @db.Decimal(14, 2) // التكلفة التقديرية لكامل المشروع ×1000$
-  yearCostK       Decimal? @db.Decimal(14, 2) // التكلفة التقديرية للسنة ×1000$
+  totalCostK      Decimal?    @db.Decimal(14, 2) // التكلفة التقديرية لكامل المشروع ×1000$
+  yearCostK       Decimal?    @db.Decimal(14, 2) // التكلفة التقديرية للسنة ×1000$
   planYear        Int
   departmentId    String?
   department      Department? @relation("PrimaryDepartment", fields: [departmentId], references: [id], onDelete: SetNull)
@@ -156,6 +161,11 @@ model Project {
   localContributionK   Decimal? @db.Decimal(14, 2)
   partnerName          String? // غير الهيئة المحلية / الشريك
   partnerContributionK Decimal? @db.Decimal(14, 2)
+
+  // Set by the scheduler (project-events) so each event is announced once.
+  startNotifiedAt DateTime? // "project started" sent (re-sent if the start date moves later)
+  dueNotifiedAt   DateTime? // "end date reached" sent
+  completedAt     DateTime? // when the project was first seen as COMPLETED
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -191,20 +201,20 @@ model ProjectAssignment {
 // fields staff are allowed to change (steps 2–4). When approved (or when the
 // municipality does not require approval) the payload is applied to the project.
 model Report {
-  id          String       @id @default(cuid())
-  tenantId    String
-  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  projectId   String
-  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  authorId    String
-  author      User         @relation("ReportAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-  status      ReportStatus @default(PENDING)
-  payload     Json
-  reviewerId  String?
-  reviewer    User?        @relation("ReportReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
-  reviewNote  String?
-  reviewedAt  DateTime?
-  createdAt   DateTime     @default(now())
+  id         String       @id @default(cuid())
+  tenantId   String
+  tenant     Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projectId  String
+  project    Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     User         @relation("ReportAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  status     ReportStatus @default(PENDING)
+  payload    Json
+  reviewerId String?
+  reviewer   User?        @relation("ReportReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  reviewNote String?
+  reviewedAt DateTime?
+  createdAt  DateTime     @default(now())
 
   @@index([tenantId, status])
   @@index([projectId])
@@ -223,4 +233,53 @@ model AuditLog {
   createdAt  DateTime @default(now())
 
   @@index([tenantId, createdAt])
+}
+
+enum NotificationType {
+  PROJECT_STARTED
+  PROJECT_DUE
+  PROJECT_COMPLETED
+  SUMMARY_READY
+}
+
+// An in-app notification for one user. Text is stored in both languages.
+model Notification {
+  id        String           @id @default(cuid())
+  tenantId  String
+  tenant    Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  titleEn   String
+  body      String?
+  bodyEn    String?
+  link      String? // web path to open, e.g. /admin/projects/<id>
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, readAt, createdAt])
+}
+
+enum SummaryKind {
+  WEEKLY
+  MONTHLY
+  CUSTOM
+}
+
+// A performance report for a period. `data` is a snapshot taken when it was generated,
+// so old reports keep showing what was true at the time.
+model SummaryReport {
+  id          String      @id @default(cuid())
+  tenantId    String
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  kind        SummaryKind
+  periodStart DateTime
+  periodEnd   DateTime // exclusive
+  data        Json
+  createdById String? // null when generated by the scheduler
+  createdAt   DateTime    @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([tenantId, kind, periodStart])
 }

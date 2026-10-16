@@ -1,7 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import {
-  IsArray, IsDateString, IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, MaxLength, Min, MinLength, ValidateIf,
+  ArrayMaxSize, ArrayNotEmpty, IsArray, IsDateString, IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, MaxLength, Min, MinLength, ValidateIf,
 } from 'class-validator';
 import { AchievementLevel, ProjectStatus } from '@prisma/client';
 
@@ -50,3 +50,8 @@ export const PROGRESS_FIELDS = [
   'achievementLevel', 'kpiName', 'kpiTarget', 'kpiActual', 'evaluationNotes',
   'localBudgetLine', 'localContributionK', 'partnerName', 'partnerContributionK',
 ] as const;
+
+/** Delete several projects at once (admin projects list). */
+export class BulkDeleteDto {
+  @IsArray() @ArrayNotEmpty() @ArrayMaxSize(500) @IsString({ each: true }) ids: string[];
+}

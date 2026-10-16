@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuditModule } from './audit/audit.module';
 import { AuthGuard } from './common/auth.guard';
@@ -16,12 +17,16 @@ import { ProjectsModule } from './projects/projects.module';
 import { ReportsModule } from './reports/reports.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { SettingsModule } from './settings/settings.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { SummariesModule } from './summaries/summaries.module';
+import { ProjectEventsModule } from './project-events/project-events.module';
 import { HealthController } from './health.controller';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 300 }]),
+    ScheduleModule.forRoot(),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET ?? 'dev-secret-change-me',
@@ -38,6 +43,9 @@ import { HealthController } from './health.controller';
     ReportsModule,
     DashboardModule,
     SettingsModule,
+    NotificationsModule,
+    SummariesModule,
+    ProjectEventsModule,
   ],
   controllers: [HealthController],
   providers: [

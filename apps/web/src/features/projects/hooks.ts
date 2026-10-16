@@ -40,6 +40,10 @@ export function useDeleteProject(id: string, opts?: ActionOptions) {
   return useAction(() => projectsApi.remove(id), { ...opts, invalidate: affected });
 }
 
+export function useDeleteProjects(opts?: ActionOptions<{ deleted: number }, string[]>) {
+  return useAction(projectsApi.removeMany, { ...opts, invalidate: affected });
+}
+
 export function useImportProjects(opts?: ActionOptions<ImportResult, File>) {
   return useAction(projectsApi.import, { ...opts, invalidate: affected });
 }
