@@ -4,7 +4,7 @@ import type { Role } from '@/lib/types';
  * Who goes where. The API enforces every permission on each request;
  * these rules only decide which area of the web app a role sees.
  *
- *   SUPER_ADMIN  platform owner     → /platform  (manage municipalities)
+ *   SUPER_ADMIN  platform owner     → /platform-owner  (manage municipalities)
  *   ADMIN        municipality admin → /admin     (everything in their municipality; may also use /portal)
  *   STAFF        employee / partner → /portal    (only projects assigned to them)
  */
@@ -14,7 +14,7 @@ export const SESSION_COOKIE = 'cityplus_token';
 
 /** Each role's home page after signing in. */
 const ROLE_HOME: Record<Role, string> = {
-  SUPER_ADMIN: '/platform',
+  SUPER_ADMIN: '/platform-owner',
   ADMIN: '/admin',
   STAFF: '/portal',
 };
@@ -23,7 +23,7 @@ const ROLE_HOME: Record<Role, string> = {
 export const AREA_ROLES: Record<string, Role[]> = {
   '/admin': ['ADMIN'],
   '/portal': ['STAFF', 'ADMIN'],
-  '/platform': ['SUPER_ADMIN'],
+  '/platform-owner': ['SUPER_ADMIN'],
 };
 
 export const homeFor = (role: string | undefined) => ROLE_HOME[role as Role] ?? '/login';

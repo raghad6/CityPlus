@@ -12,7 +12,7 @@ It's a multi-municipality platform: each municipality has its own users, departm
 
 | Role | Who | Where | What they can do |
 |---|---|---|---|
-| **Platform owner** (`SUPER_ADMIN`) | The team running City+ | `/platform` | Add municipalities and their first admin, set each one's plan and user limit, and suspend or activate them. |
+| **Platform owner** (`SUPER_ADMIN`) | The team running City+ | `/platform-owner` | Add municipalities and their first admin, set each one's plan and user limit, and suspend or activate them. |
 | **Municipality admin** (`ADMIN`, المسؤول) | The planning unit of a municipality | `/admin` | See the dashboard; add projects, import them from Excel or export them; approve or reject staff reports; manage users and departments; create weekly, monthly or on-demand reports; view the activity log; change settings. |
 | **Staff** (`STAFF`) | Department employees or external partners | `/portal` | See only the projects assigned to them, send progress reports, mark projects complete, and follow up on their reports. |
 
@@ -34,11 +34,75 @@ Everyone gets in-app notifications when their projects start, reach their end da
 
 | Part | Built with |
 |---|---|
-| Frontend (`apps/web`) | Next.js 14, React 18, TypeScript, Tailwind CSS, TanStack Query, Recharts |
-| Backend (`apps/api`) | NestJS 10, TypeScript, Prisma 5 |
-| Database | PostgreSQL 16 |
+| **Frontend** (`apps/web`) | Next.js 14, React 18, TypeScript, Tailwind CSS |
+| **Backend** (`apps/api`) | NestJS 10, TypeScript, Prisma 5 |
+| **Database** | PostgreSQL 16 |
 
-The browser only talks to the web app. The web app forwards `/api/*` calls to the backend, and only the backend talks to the database.
+Other libraries: TanStack Query (data loading), Recharts (charts), ExcelJS (Excel files) and lucide-react (icons). The full list is in each app's `package.json`.
+
+---
+
+## How it works
+
+### Request flow
+
+```
+Browser ──► Web app (Next.js :3000) ──/api/*──► API (NestJS :4000) ──► PostgreSQL (:5432)
+            pages + cached data                 rules, permissions        storage
+```
+
+- The browser only calls `/api/...` on the web app's own address. Next.js forwards those calls to the API (`apps/web/next.config.mjs`). That keeps the login cookie first-party and avoids CORS.
+- **The API is the only place that enforces permissions.** The web app hides areas and buttons a role can't use, but every request is checked again on the server.
+
+### Inside the API: what happens on every request
+
+1. `ThrottlerGuard`: rate limit (300 requests per minute).
+2. `AuthGuard` (`common/auth.guard.ts`): reads the `cityplus_token` cookie, verifies the JWT and re-reads the user, so a disabled user or suspended municipality is cut off immediately. Routes marked `@Public()` skip this.
+3. `RolesGuard` (`common/roles.guard.ts`): checks the `@Roles(...)` on the controller.
+4. `ValidationPipe`: checks the body against the DTO and strips unknown fields.
+5. The **controller** passes the request to the **service**, which applies the rules, saves through Prisma and writes to the activity log.
+6. `PrismaExceptionFilter` turns "not found" and "duplicate" database errors into clean 404 and 409 responses.
+
+### Multi-tenancy
+
+Each municipality is a `Tenant`. Every business table has a `tenantId`. The API always takes it from the signed-in user (`@TenantId()`), never from the request, so one municipality can never read or change another's data. Staff see only the projects assigned to them (`projects/project-rules.ts`).
+
+### Login and routing
+
+`POST /auth/login` checks the password, signs a JWT (7 days by default) and sets it as an httpOnly cookie. In the web app, `middleware.ts` reads the role from that cookie and sends each user to their area (`/platform-owner`, `/admin` or `/portal`). The rules are in `features/auth/roles.ts`.
+
+### Progress-report workflow
+
+1. Staff submit changes for a project (steps 2–4 of the project form).
+2. If the municipality requires approval, the report waits as `PENDING`. The admin approves it, which copies the changes onto the project in one transaction, or rejects it with a reason.
+3. Reports from admins, and from municipalities that don't require approval, apply immediately.
+
+### Background jobs (`project-events/`)
+
+| When | What |
+|---|---|
+| Every 5 minutes | Notify people about projects that started, reached their end date or were completed (each event only once) |
+| Sunday 07:00 | Generate last week's performance report |
+| 1st of the month, 07:00 | Generate last month's performance report |
+
+Times use `APP_TZ` (default `Asia/Hebron`).
+
+### Database (`apps/api/prisma/schema.prisma`)
+
+```
+Tenant (municipality)
+ ├── User            role SUPER_ADMIN | ADMIN | STAFF; status PENDING | ACTIVE | DISABLED
+ ├── Department      isExternal = an outside partner
+ ├── Project         the 4-step plan form (identity, follow-up, evaluation, funding)
+ │    ├── ProjectDepartment   extra departments sharing the project
+ │    ├── ProjectAssignment   staff who follow the project
+ │    └── Report              progress report; payload = proposed changes
+ ├── Notification    in-app notification, stored in Arabic and English
+ ├── SummaryReport   weekly / monthly / on-demand report (data snapshot)
+ └── AuditLog        who did what, and when
+```
+
+Money fields are stored in thousands of USD, as in the municipal plan sheet.
 
 ---
 
@@ -148,18 +212,114 @@ Change these settings in the backend environment:
 ## Project structure
 
 ```
-apps/
-  api/          backend (NestJS) on port 4000
-    prisma/     database tables (schema.prisma) and demo data (seed.ts)
-    src/        one folder per feature: projects, reports, users, summaries, notifications…
-  web/          website (Next.js) on port 3000
-    src/app/         one folder per page (/admin, /portal, /platform, login/sign-up in (auth));
-                     components used by one page sit next to it in _components/
-    src/features/    data calls, hooks and components shared by several pages
-    src/components/  generic UI (buttons, cards, modals) and the app frame
-    src/styles/      global CSS (Tailwind)
-    src/i18n/        Arabic and English text
-    src/lib/         HTTP client, formatting and other helpers
-.local-postgres/  optional local database for running without Docker
-docker-compose.yml  runs everything with one command
+cityplus/
+├── apps/
+│   ├── api/                  backend (NestJS), port 4000
+│   └── web/                  website (Next.js), port 3000
+├── .local-postgres/          local PostgreSQL for running without Docker
+├── .github/workflows/ci.yml  CI: builds the API, creates tables, seeds, type-checks and builds the web app
+├── docker-compose.yml        runs database + API + web together
+└── package.json              shortcut scripts for the whole repo
 ```
+
+### Backend: `apps/api`
+
+```
+prisma/
+  schema.prisma        database tables and enums
+  seed.ts              demo data and demo accounts
+src/
+  main.ts              starts the server (helmet, cookies, validation, error filter)
+  app.module.ts        registers every module and the global guards
+  health.controller.ts GET /health
+  common/              guards, decorators (@Public, @Roles, @CurrentUser, @TenantId), error filter, helpers
+  prisma/              database connection (PrismaService)
+  auth/                login, sign-up, logout, profile, change password
+  public/              lookups for the sign-up page (no login needed)
+  platform/            platform owner: create and manage municipalities
+  users/               users of a municipality: approve, add, edit, assign projects
+  departments/         departments
+  projects/            projects, shared project rules, Excel import/export
+  reports/             progress reports: submit, approve, reject, withdraw
+  dashboard/           dashboard numbers, charts and calendar
+  summaries/           weekly / monthly / on-demand performance reports (+ Excel)
+  notifications/       in-app notifications
+  project-events/      scheduled background jobs
+  settings/            municipality settings
+  audit/               activity log
+```
+
+Every feature folder follows the same pattern:
+
+| File | Job |
+|---|---|
+| `x.controller.ts` | HTTP only: URLs, `@Roles`, passes user, ids and body to the service |
+| `x.service.ts` | Business rules, database work and audit logging |
+| `x.dto.ts` | Shape and validation of the request body |
+| `x.module.ts` | Registers the controller and service |
+
+### Frontend: `apps/web/src`
+
+```
+app/                  pages: one folder per URL
+  layout.tsx          root layout (font, CSS, providers)
+  page.tsx            "/" sends each role to its home area
+  (auth)/             /login and /signup (brackets = not part of the URL)
+    _components/      AuthLayout, shared by both pages
+  admin/              municipality admin area: dashboard, projects, reports, summaries,
+                      users, departments, activity, settings, profile
+  portal/             staff area: home, projects, reports, profile
+  platform-owner/     platform owner area: municipalities, profile
+  <page>/_components/ components used by that one page only
+features/             one folder per business area (projects, reports, users, auth, …)
+  types.ts            data shapes and constants
+  api.ts              backend calls, one function per endpoint
+  hooks.ts            TanStack Query hooks: cache keys, loading, refreshing after changes
+  components/         UI used by several pages (ProjectWizard, StatusBadge, ReportForm…)
+components/
+  ui/                 generic building blocks: Button, Card, Modal, inputs, badges
+  layout/AppShell.tsx app frame: sidebar, header, notifications, language switch
+styles/globals.css    global CSS (Tailwind layers)
+i18n/                 ar.ts (every text key), en.ts (same keys in English), index.tsx (useI18n)
+lib/                  http client, useAction helper, formatting, shared types
+middleware.ts         sends visitors to login or to their own area
+```
+
+**Example: approving a sign-up from start to finish**
+1. `app/admin/users/page.tsx` shows the Approve button and calls `approve.mutate(id)`.
+2. `features/users/hooks.ts` → `useApproveUser()` calls the API, shows a toast and refreshes the cached users and dashboard data.
+3. `features/users/api.ts` → `http.patch('/users/:id')`.
+4. `lib/http.ts` sends `/api/users/:id`, Next.js forwards it to the API, and `users.service.ts` updates the user.
+
+---
+
+## Conventions
+
+| You want to add… | Put it in |
+|---|---|
+| A new page | `apps/web/src/app/<area>/<name>/page.tsx` |
+| A component for that one page | `apps/web/src/app/<area>/<name>/_components/` |
+| A component used by several pages | `apps/web/src/features/<feature>/components/` |
+| A generic widget (no business logic) | `apps/web/src/components/ui/` |
+| Backend calls and data hooks | `apps/web/src/features/<feature>/api.ts` and `hooks.ts` |
+| New text | `apps/web/src/i18n/ar.ts` **and** `en.ts` (TypeScript reports a missing English key) |
+| A new endpoint | `apps/api/src/<feature>/`: controller + service + DTO; add `@Roles` |
+| A new table or column | `apps/api/prisma/schema.prisma`, then `npx prisma db push` |
+
+Rules the code follows:
+- Pages never call the API directly. They use hooks from `features/*/hooks.ts`.
+- `components/ui` never imports from `features`, so it stays reusable.
+- Business rules and database code live in services, not controllers.
+- Always take the tenant from `@TenantId()`, never from the request.
+- API error codes (for example `DUPLICATE`) are shown to the user through `common.err.<CODE>` text keys.
+
+## Useful scripts
+
+| Where | Command | What it does |
+|---|---|---|
+| root | `npm run install:all` | Install both apps |
+| root | `npm run db:setup` | Create tables and load demo data |
+| root | `npm run dev:api` / `npm run dev:web` | Start the backend / website in dev mode |
+| root | `npm run build` | Production build of both apps |
+| `apps/api` | `npx prisma studio` | Browse the database at http://localhost:5555 |
+| `apps/web` | `npm run lint` | Lint the website |

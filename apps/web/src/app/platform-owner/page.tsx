@@ -18,7 +18,7 @@ export default function PlatformHome() {
       <PageHeader
         title={t('platform.title')}
         subtitle={t('platform.subtitle')}
-        actions={<Link href="/platform/tenants/new"><Button icon={<Plus className="h-4 w-4" />}>{t('platform.newTenant')}</Button></Link>}
+        actions={<Link href="/platform-owner/tenants/new"><Button icon={<Plus className="h-4 w-4" />}>{t('platform.newTenant')}</Button></Link>}
       />
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label={t('platform.tenants')} value={s.tenants ?? 0} sub={`${s.activeTenants ?? 0} ${t('platform.activeTenants')}`} icon={<Building className="h-5 w-5" />} />
@@ -43,7 +43,7 @@ export default function PlatformHome() {
               {tenants.data?.map((x) => (
                 <tr key={x.id} className="hover:bg-ink-50/70">
                   <td className="px-4 py-3">
-                    <Link href={`/platform/tenants/${x.id}`} className="font-medium text-ink-900 hover:text-brand-700">{n(x)}</Link>
+                    <Link href={`/platform-owner/tenants/${x.id}`} className="font-medium text-ink-900 hover:text-brand-700">{n(x)}</Link>
                     <div className="text-xs text-ink-500"><code>{x.slug}</code>{x.city ? ` · ${x.city}` : ''}</div>
                   </td>
                   <td className="px-4 py-3"><Badge className="bg-brand-50 text-brand-800">{t(`plan.${x.plan}`)}</Badge></td>

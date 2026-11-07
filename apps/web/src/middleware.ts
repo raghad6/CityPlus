@@ -35,4 +35,4 @@ export function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = { matcher: ['/admin/:path*', '/portal/:path*', '/platform/:path*', '/login', '/signup'] };
+export const config = { matcher: ['/admin/:path*', '/portal/:path*', '/platform-owner/:path*', '/login', '/signup'] };

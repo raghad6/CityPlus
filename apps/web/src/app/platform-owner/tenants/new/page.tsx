@@ -15,7 +15,7 @@ export default function NewTenant() {
     seedDefaultDepartments: true, adminName: '', adminEmail: '', adminPassword: '',
   });
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF((x) => ({ ...x, [k]: e.target.value }));
-  const create = useCreateTenant({ success: t('platform.created'), onSuccess: (r) => router.replace(`/platform/tenants/${r.id}`) });
+  const create = useCreateTenant({ success: t('platform.created'), onSuccess: (r) => router.replace(`/platform-owner/tenants/${r.id}`) });
   const submit = () => create.mutate({
     ...f, plan: f.plan as Plan, maxUsers: Number(f.maxUsers), planYear: Number(f.planYear), nameEn: f.nameEn || undefined, city: f.city || undefined,
   });
