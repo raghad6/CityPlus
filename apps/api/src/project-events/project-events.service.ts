@@ -93,7 +93,6 @@ export class ProjectEventsService {
       await this.prisma.project.update({ where: { id: p.id }, data: { dueNotifiedAt: now } });
     }
 
-    // Completed: announce once.
     const completed = await this.prisma.project.findMany({
       where: { tenantId, status: 'COMPLETED', completedAt: null },
       select: { id: true, componentName: true, updatedAt: true, dueDate: true },

@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { AlertCircle, MailCheck } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { useErrorMessage } from '@/lib/query';
 import { Button, Field, Input, Select } from '@/components/ui';
 import { usePublicDepartments, usePublicTenants, useSignup } from '@/features/auth/hooks';
-import { AuthLayout } from '@/features/auth/components/AuthLayout';
+import { AuthLayout } from '../_components/AuthLayout';
 
 export default function SignupPage() {
   const { t, n } = useI18n();

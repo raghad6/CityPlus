@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { daysFromNow } from '@/lib/format';
 import { Card, CardHeader, Progress } from '@/components/ui';
-import type { DueProject } from '../types';
+import type { DueProject } from '@/features/dashboard/types';
 
 /** A list of projects with their due date: red for overdue, amber for due soon. */
 export function DueList({ title, items, tone }: { title: string; items: DueProject[]; tone: 'late' | 'soon' }) {

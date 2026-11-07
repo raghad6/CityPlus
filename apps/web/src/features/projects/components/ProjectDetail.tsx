@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ArrowRight, CalendarDays, CheckCircle2, ClipboardEdit, Pencil, Trash2 } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { daysFromNow, date, money } from '@/lib/format';
 import { Avatar, Badge, Button, Card, CardHeader, ConfirmModal, Loading, Progress } from '@/components/ui';
 import { ReportBadge } from '@/features/reports/components/ReportBadge';

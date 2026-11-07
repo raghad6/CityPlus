@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bell, CalendarCheck, CalendarClock, CheckCircle2, FileBarChart } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { date } from '@/lib/format';
 import { Spinner } from '@/components/ui';
 import { useNotifications, useReadAllNotifications, useReadNotification, useUnreadCount } from '../hooks';

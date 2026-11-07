@@ -6,14 +6,14 @@ import { Suspense, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Download, FolderKanban, MessageSquareWarning, Plus, Search, Trash2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/cn';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { daysFromNow, date, money } from '@/lib/format';
 import { Button, Card, ConfirmModal, Empty, Input, Loading, PageHeader, ProgressLabel, Select } from '@/components/ui';
 import { useDepartments } from '@/features/departments/hooks';
 import { projectsApi } from '@/features/projects/api';
 import { useDeleteProjects, useProjects } from '@/features/projects/hooks';
 import { isOpen, PROJECT_STATUSES } from '@/features/projects/types';
-import { ImportModal } from '@/features/projects/components/ImportModal';
+import { ImportModal } from './_components/ImportModal';
 import { StatusBadge } from '@/features/projects/components/StatusBadge';
 
 const CHECKBOX = 'h-4 w-4 cursor-pointer rounded border-ink-300 text-brand-600 accent-brand-600';

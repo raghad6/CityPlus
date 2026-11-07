@@ -6,8 +6,6 @@ City+ helps municipalities follow their yearly development-plan projects in one 
 
 It's a multi-municipality platform: each municipality has its own users, departments and projects, and can never see another municipality's data. The interface is Arabic first (right-to-left), with a one-click switch to English.
 
-**More docs:** [Architecture](ARCHITECTURE.md) · [Every file explained](docs/FILES.md) · [Roadmap](docs/ROADMAP.md)
-
 ---
 
 ## The 3 roles
@@ -155,8 +153,13 @@ apps/
     prisma/     database tables (schema.prisma) and demo data (seed.ts)
     src/        one folder per feature: projects, reports, users, summaries, notifications…
   web/          website (Next.js) on port 3000
-    src/app/    pages: /admin, /portal, /platform, and login/sign-up in (auth)
-    src/features/  data calls and components for each feature
+    src/app/         one folder per page (/admin, /portal, /platform, login/sign-up in (auth));
+                     components used by one page sit next to it in _components/
+    src/features/    data calls, hooks and components shared by several pages
+    src/components/  generic UI (buttons, cards, modals) and the app frame
+    src/styles/      global CSS (Tailwind)
+    src/i18n/        Arabic and English text
+    src/lib/         HTTP client, formatting and other helpers
 .local-postgres/  optional local database for running without Docker
 docker-compose.yml  runs everything with one command
 ```

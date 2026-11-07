@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { Button, Field, Input, Modal, Segmented } from '@/components/ui';
-import { useCreateSummary } from '../hooks';
+import { useCreateSummary } from '@/features/summaries/hooks';
 
 type Preset = 'thisWeek' | 'lastWeek' | 'thisMonth' | 'lastMonth' | 'custom';
 

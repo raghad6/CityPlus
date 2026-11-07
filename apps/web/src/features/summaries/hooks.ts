@@ -5,7 +5,7 @@ import { useAction, type ActionOptions } from '@/lib/query';
 import { summariesApi } from './api';
 import type { SummaryKind, SummaryReport } from './types';
 
-export const summaryKeys = {
+const summaryKeys = {
   all: ['summaries'] as const,
   detail: (id: string) => ['summaries', id] as const,
 };

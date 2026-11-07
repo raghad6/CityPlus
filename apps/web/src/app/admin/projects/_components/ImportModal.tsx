@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { Download, FileSpreadsheet } from 'lucide-react';
 import { toast } from 'sonner';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { Button, Modal } from '@/components/ui';
-import { projectsApi } from '../api';
-import { useImportProjects } from '../hooks';
-import type { ImportResult } from '../types';
+import { projectsApi } from '@/features/projects/api';
+import { useImportProjects } from '@/features/projects/hooks';
+import type { ImportResult } from '@/features/projects/types';
 
 /** Upload an Excel file of projects; shows row-by-row problems. */
 export function ImportModal({ open, onClose }: { open: boolean; onClose: () => void }) {

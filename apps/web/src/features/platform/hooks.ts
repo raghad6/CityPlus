@@ -5,7 +5,7 @@ import { useAction, type ActionOptions } from '@/lib/query';
 import { platformApi } from './api';
 import type { CreateTenantInput, Tenant, UpdateTenantInput } from './types';
 
-export const platformKeys = {
+const platformKeys = {
   all: ['platform'] as const,
   stats: ['platform', 'stats'] as const,
   tenants: ['platform', 'tenants'] as const,

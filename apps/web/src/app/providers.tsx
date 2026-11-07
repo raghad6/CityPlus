@@ -3,7 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Toaster } from 'sonner';
-import { I18nProvider, type Lang } from '@/lib/i18n';
+import { I18nProvider, type Lang } from '@/i18n';
 
 export function Providers({ lang, children }: { lang: Lang; children: React.ReactNode }) {
   const [qc] = useState(

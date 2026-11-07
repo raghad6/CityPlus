@@ -8,7 +8,7 @@ import type { ProjectInput } from '@/features/projects/types';
 import { reportsApi } from './api';
 import type { Report, ReportFilters } from './types';
 
-export const reportKeys = {
+const reportKeys = {
   all: ['reports'] as const,
   list: (f: ReportFilters) => ['reports', 'list', f] as const,
   detail: (id: string) => ['reports', 'detail', id] as const,

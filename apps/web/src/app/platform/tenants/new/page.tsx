@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { useCreateTenant } from '@/features/platform/hooks';
 import type { Plan } from '@/features/platform/types';
 import { Button, Card, CardHeader, Field, Input, PageHeader, Select } from '@/components/ui';

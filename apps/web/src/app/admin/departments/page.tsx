@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Building2, FolderKanban, Pencil, Plus, Trash2, Users } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { useDeleteDepartment, useDepartments, useSaveDepartment } from '@/features/departments/hooks';
 import type { Department } from '@/features/departments/types';
 import { Badge, Button, Card, ConfirmModal, Empty, Field, Input, Loading, Modal, PageHeader } from '@/components/ui';

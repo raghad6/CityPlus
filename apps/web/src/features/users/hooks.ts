@@ -7,7 +7,7 @@ import { projectKeys } from '@/features/projects/hooks';
 import { usersApi } from './api';
 import type { CreateUserInput, UpdateUserInput, User, UserFilters } from './types';
 
-export const userKeys = {
+const userKeys = {
   all: ['users'] as const,
   list: (f: UserFilters) => ['users', 'list', f] as const,
   detail: (id: string) => ['users', 'detail', id] as const,

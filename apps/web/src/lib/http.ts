@@ -14,7 +14,7 @@ export class ApiError extends Error {
 
 type Query = Record<string, string | number | boolean | undefined | null>;
 
-export function qs(params?: Query) {
+function qs(params?: Query) {
   if (!params) return '';
   const s = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) if (v !== undefined && v !== null && v !== '') s.set(k, String(v));

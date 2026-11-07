@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { AlertTriangle, CheckCircle2, Clock, FolderKanban, XCircle } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { date } from '@/lib/format';
 import { Card, CardHeader, Empty, Loading, Stat } from '@/components/ui';
 import { useMe } from '@/features/auth/hooks';

@@ -4,7 +4,6 @@ import { AuditService } from '../audit/audit.service';
 import { AuthUser } from '../common/decorators';
 import { UpdateSettingsDto } from './settings.dto';
 
-/** The signed-in admin's own municipality settings. */
 @Injectable()
 export class SettingsService {
   constructor(private prisma: PrismaService, private audit: AuditService) {}

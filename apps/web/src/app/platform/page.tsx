@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Building, ClipboardCheck, FolderKanban, Plus, Users } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { date } from '@/lib/format';
 import { Badge, Button, Card, Loading, PageHeader, Stat } from '@/components/ui';
 import { usePlatformStats, useTenants } from '@/features/platform/hooks';

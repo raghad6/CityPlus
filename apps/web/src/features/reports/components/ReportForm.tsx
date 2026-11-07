@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { Loading, PageHeader } from '@/components/ui';
 import { useMe } from '@/features/auth/hooks';
 import { useProject } from '@/features/projects/hooks';

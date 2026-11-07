@@ -3,7 +3,6 @@
 import { forwardRef } from 'react';
 import { cn } from '@/lib/cn';
 
-/** Form controls: a labelled Field wrapper, Input, Textarea, Select and an on/off Toggle. */
 
 export function Field({
   label, required, hint, error, children, className,

@@ -1,7 +1,7 @@
 'use client';
 
 import { BarChart3, CheckCircle2, FileSpreadsheet } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { LangToggle, Logo } from '@/components/layout/AppShell';
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {

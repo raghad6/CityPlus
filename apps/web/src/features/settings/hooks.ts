@@ -5,7 +5,7 @@ import { useAction, type ActionOptions } from '@/lib/query';
 import { settingsApi } from './api';
 import type { SettingsInput, TenantSettings } from './types';
 
-export const settingsKeys = { all: ['settings'] as const };
+const settingsKeys = { all: ['settings'] as const };
 
 export function useSettings() {
   return useQuery({ queryKey: settingsKeys.all, queryFn: settingsApi.get });

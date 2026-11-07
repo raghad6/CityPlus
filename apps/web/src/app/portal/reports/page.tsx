@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FileText } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { date } from '@/lib/format';
 import { Button, Card, Empty, Loading, PageHeader } from '@/components/ui';
 import { useReports, useWithdrawReport } from '@/features/reports/hooks';

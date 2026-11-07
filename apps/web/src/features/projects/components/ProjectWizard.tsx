@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Check, Lock, Search } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { money } from '@/lib/format';
 import { Button, Card, Field, Input, Select, Textarea } from '@/components/ui';
 import { useDepartments } from '@/features/departments/hooks';

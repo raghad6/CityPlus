@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight, CalendarClock, CheckCircle2, ClipboardCheck, Download, FolderKanban, Gauge, Printer, Wallet, AlertTriangle } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { date, money } from '@/lib/format';
 import { Badge, Button, Card, CardHeader, Loading, PageHeader, ProgressLabel, Stat } from '@/components/ui';
 import { StatusBadge } from '@/features/projects/components/StatusBadge';
@@ -10,7 +10,7 @@ import { summariesApi } from '@/features/summaries/api';
 import { useSummary } from '@/features/summaries/hooks';
 import { periodLabel } from '@/features/summaries/period';
 import type { SummaryRow } from '@/features/summaries/types';
-import type { DictKey } from '@/lib/dict';
+import type { DictKey } from '@/i18n';
 
 /** A list of projects (started, completed, due, overdue, upcoming) inside the report. */
 function ProjectTable({ title, rows }: { title: DictKey; rows: SummaryRow[] }) {

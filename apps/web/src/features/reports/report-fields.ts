@@ -1,5 +1,5 @@
-import type { DictKey } from '@/lib/dict';
-import type { Lang } from '@/lib/i18n';
+import type { DictKey } from '@/i18n';
+import type { Lang } from '@/i18n';
 import { money } from '@/lib/format';
 
 /** The fields a progress report can change, in display order, with how to format each value. */

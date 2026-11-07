@@ -1,6 +1,6 @@
 'use client';
 
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { Badge } from '@/components/ui';
 import type { UserStatus } from '../types';
 

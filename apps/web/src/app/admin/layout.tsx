@@ -6,7 +6,6 @@ import { useReports } from '@/features/reports/hooks';
 import { usePendingUsers } from '@/features/users/hooks';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  // Badge counts in the sidebar
   const pendingReports = useReports({ status: 'PENDING' });
   const pendingUsers = usePendingUsers();
 

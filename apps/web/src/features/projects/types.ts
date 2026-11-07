@@ -8,7 +8,7 @@ export const PROJECT_STATUSES: ProjectStatus[] = ['NOT_STARTED', 'IN_PROGRESS', 
 export const LEVELS: AchievementLevel[] = ['EXCELLENT', 'GOOD', 'AVERAGE', 'WEAK'];
 
 /** Once a project reaches one of these it is no longer "open", so it can't be late. */
-export const CLOSED_STATUSES: ProjectStatus[] = ['COMPLETED', 'CANCELLED'];
+const CLOSED_STATUSES: ProjectStatus[] = ['COMPLETED', 'CANCELLED'];
 export const isOpen = (status: ProjectStatus) => !CLOSED_STATUSES.includes(status);
 
 /** A project from the development plan. Money fields are in thousands of USD (×1000$). */

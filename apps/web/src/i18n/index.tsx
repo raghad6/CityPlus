@@ -1,7 +1,10 @@
 'use client';
 
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { ar, en, type DictKey } from './dict';
+import { ar, type DictKey } from './ar';
+import { en } from './en';
+
+export type { DictKey };
 
 export type Lang = 'ar' | 'en';
 const dicts = { ar, en } as const;

@@ -5,10 +5,10 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Globe, LogOut, Menu, UserRound, X } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { useLogout, useMe } from '@/features/auth/hooks';
 import { NotificationBell } from '@/features/notifications/components/NotificationBell';
-import type { DictKey } from '@/lib/dict';
+import type { DictKey } from '@/i18n';
 import { Avatar, Spinner } from '@/components/ui';
 
 export interface NavItem {

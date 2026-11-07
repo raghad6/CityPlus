@@ -42,8 +42,8 @@ export const STATUS_AR: Record<string, string> = {
 export const LEVEL_AR: Record<string, string> = { EXCELLENT: 'ممتاز', GOOD: 'جيد', AVERAGE: 'متوسط', WEAK: 'ضعيف' };
 
 const invert = (m: Record<string, string>) => Object.fromEntries(Object.entries(m).map(([k, v]) => [v, k]));
-export const STATUS_FROM_AR = invert(STATUS_AR);
-export const LEVEL_FROM_AR = invert(LEVEL_AR);
+const STATUS_FROM_AR = invert(STATUS_AR);
+const LEVEL_FROM_AR = invert(LEVEL_AR);
 
 export function newWorkbook() {
   const wb = new ExcelJS.Workbook();
@@ -71,7 +71,7 @@ export function cellText(v: ExcelJS.CellValue): string {
 
 const ARABIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
 /** Arabic-Indic digits → 0-9, Arabic decimal/thousands marks → . and , */
-export const latinDigits = (s: string) =>
+const latinDigits = (s: string) =>
   s.replace(/[٠-٩]/g, (d) => String(ARABIC_DIGITS.indexOf(d))).replace(/٫/g, '.').replace(/٬/g, ',');
 
 /** Normalise text for loose comparison: lower case, no diacritics/spaces/punctuation, unified alef/ya/ta marbuta. */

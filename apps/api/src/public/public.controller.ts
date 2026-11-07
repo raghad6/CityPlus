@@ -2,7 +2,6 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { Public } from '../common/decorators';
 import { PublicService } from './public.service';
 
-/** Unauthenticated lookups needed by the sign-up page. */
 @Controller('public')
 @Public()
 export class PublicController {

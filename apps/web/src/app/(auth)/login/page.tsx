@@ -4,12 +4,12 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { AlertCircle } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { useErrorMessage } from '@/lib/query';
 import { Button, Field, Input } from '@/components/ui';
 import { useLogin } from '@/features/auth/hooks';
 import { homeFor } from '@/features/auth/roles';
-import { AuthLayout } from '@/features/auth/components/AuthLayout';
+import { AuthLayout } from '../_components/AuthLayout';
 
 function LoginForm() {
   const { t } = useI18n();

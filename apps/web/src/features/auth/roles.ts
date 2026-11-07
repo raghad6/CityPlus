@@ -13,7 +13,7 @@ import type { Role } from '@/lib/types';
 export const SESSION_COOKIE = 'cityplus_token';
 
 /** Each role's home page after signing in. */
-export const ROLE_HOME: Record<Role, string> = {
+const ROLE_HOME: Record<Role, string> = {
   SUPER_ADMIN: '/platform',
   ADMIN: '/admin',
   STAFF: '/portal',
