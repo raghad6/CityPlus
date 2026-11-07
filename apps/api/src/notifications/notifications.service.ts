@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { NotificationType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
-export interface NotificationInput {
+interface NotificationInput {
   type: NotificationType;
   title: string;
   titleEn: string;

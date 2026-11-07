@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { Button, Field, Input, Modal, Select } from '@/components/ui';
 import { useDepartments } from '@/features/departments/hooks';
-import { useCreateUser } from '../hooks';
+import { useCreateUser } from '@/features/users/hooks';
 
 /** Admin adds a user directly (active straight away, no approval needed). */
 export function AddUserModal({ open, onClose }: { open: boolean; onClose: () => void }) {

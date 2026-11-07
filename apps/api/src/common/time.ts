@@ -22,7 +22,6 @@ export function localMidnight(ymd: string, tz = APP_TZ) {
   return new Date(guess.getTime() - offsetMinutes(guess, tz) * 60_000);
 }
 
-/** Adds days to a YYYY-MM-DD date. */
 export function addDays(ymd: string, n: number) {
   const d = new Date(`${ymd}T00:00:00Z`);
   d.setUTCDate(d.getUTCDate() + n);

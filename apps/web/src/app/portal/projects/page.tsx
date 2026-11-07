@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { FolderKanban, Search } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { Card, Empty, Input, Loading, PageHeader, Segmented } from '@/components/ui';
 import { useStaffDashboard } from '@/features/dashboard/hooks';
 import type { StaffProject } from '@/features/dashboard/types';

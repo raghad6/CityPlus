@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Download, FileBarChart, Plus, Trash2 } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { date, money } from '@/lib/format';
 import { Badge, Button, Card, ConfirmModal, Empty, Loading, PageHeader } from '@/components/ui';
 import { summariesApi } from '@/features/summaries/api';
 import { useDeleteSummary, useSummaries } from '@/features/summaries/hooks';
-import { CreateSummaryModal } from '@/features/summaries/components/CreateSummaryModal';
+import { CreateSummaryModal } from './_components/CreateSummaryModal';
 import { periodLabel } from '@/features/summaries/period';
 import type { SummaryKind } from '@/features/summaries/types';
 

@@ -6,7 +6,7 @@ import { useAction, type ActionOptions } from '@/lib/query';
 import { authApi } from './api';
 import type { ChangePasswordInput, Me, ProfileInput } from './types';
 
-export const authKeys = {
+const authKeys = {
   me: ['me'] as const,
   publicTenants: ['public', 'tenants'] as const,
   publicDepartments: (slug: string) => ['public', 'departments', slug] as const,

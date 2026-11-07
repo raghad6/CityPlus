@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, History } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { date } from '@/lib/format';
-import type { DictKey } from '@/lib/dict';
+import type { DictKey } from '@/i18n';
 import { Avatar, Button, Card, Empty, Loading, PageHeader } from '@/components/ui';
 import { useAuditLog } from '@/features/audit/hooks';
 

@@ -6,14 +6,14 @@ import {
   AlertTriangle, ArrowLeft, Banknote, ClipboardCheck, FolderKanban, Gauge, Plus, UserPlus,
 } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { money, date } from '@/lib/format';
-import type { DictKey } from '@/lib/dict';
+import type { DictKey } from '@/i18n';
 import { Button, Card, CardHeader, Empty, Loading, Progress, Select, Stat } from '@/components/ui';
 import { useMe } from '@/features/auth/hooks';
 import { useAdminDashboard } from '@/features/dashboard/hooks';
 import { Calendar } from '@/features/dashboard/components/Calendar';
-import { DueList } from '@/features/dashboard/components/DueList';
+import { DueList } from './_components/DueList';
 import { STATUS_STYLE } from '@/features/projects/components/StatusBadge';
 
 const short = (s: string, n = 22) => (s.length > n ? s.slice(0, n - 1) + '…' : s);

@@ -1,4 +1,4 @@
-import type { Lang } from './i18n';
+import type { Lang } from '@/i18n';
 
 const nf = (lang: Lang, opts?: Intl.NumberFormatOptions) =>
   new Intl.NumberFormat(lang === 'ar' ? 'ar-PS-u-nu-latn' : 'en-US', opts);
@@ -12,7 +12,6 @@ export function money(lang: Lang, k?: number | null) {
   return `$${nf(lang).format(v)}`;
 }
 
-export const number = (lang: Lang, n?: number | null) => (n == null ? '—' : nf(lang).format(n));
 
 export function date(lang: Lang, d?: string | Date | null, withTime = false) {
   if (!d) return '—';

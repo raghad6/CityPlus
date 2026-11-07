@@ -4,12 +4,12 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { Check, Search, UserPlus, Users, X } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { date } from '@/lib/format';
 import { Avatar, Badge, Button, Card, CardHeader, Empty, Input, Loading, PageHeader, Select } from '@/components/ui';
 import { useDepartments } from '@/features/departments/hooks';
 import { useApproveUser, useDeclineUser, usePendingUsers, useUsers } from '@/features/users/hooks';
-import { AddUserModal } from '@/features/users/components/AddUserModal';
+import { AddUserModal } from './_components/AddUserModal';
 import { UserStatusBadge } from '@/features/users/components/UserStatusBadge';
 
 function UsersList() {

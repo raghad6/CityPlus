@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { Loading, PageHeader } from '@/components/ui';
 import { useMe } from '@/features/auth/hooks';
 import { useProject, useUpdateProject } from '@/features/projects/hooks';

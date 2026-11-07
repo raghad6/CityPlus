@@ -2,7 +2,6 @@
 
 City+ is a multi-tenant SaaS where municipalities track the projects in their yearly development plan. A municipality admin records projects, staff send progress reports, the admin approves them, and the dashboards update. One installation serves many municipalities, and each sees only its own data.
 
-- **What every file is for:** [docs/FILES.md](docs/FILES.md)
 - **Where the architecture goes next:** [docs/ROADMAP.md](docs/ROADMAP.md)
 - **How to run it:** [README.md](README.md)
 
@@ -69,15 +68,19 @@ Shared code in `common/`:
 
 ```
 app/          ROUTES      one folder per URL; pages compose feature hooks + components. No API URLs, no data types here.
+  x/_components/  PAGE UI   components used by that page only (e.g. admin/projects/_components/ImportModal.tsx).
+                            The `_` prefix keeps Next.js from treating the folder as a URL.
 features/     FEATURES    one folder per business area (auth, projects, reports, users, departments, dashboard, settings, platform, audit)
   x/types.ts      MODEL     the data shapes (what a Project, User, Report looks like) and domain constants
   x/api.ts        DATA      the API endpoints of that feature, typed: one function per endpoint
   x/hooks.ts      STATE     React Query hooks: cache keys, loading data, and what to refresh after a change
   x/*.ts          RULES     pure logic with no UI, e.g. projects/project-form.ts (wizard rules), reports/report-fields.ts
-  x/components/   UI        screens and widgets that belong to that feature (ProjectWizard, StatusBadge, AddUserModal…)
+  x/components/   UI        screens and widgets that belong to that feature and are shared by several pages (ProjectWizard, StatusBadge…)
 components/   SHARED UI   ui/ = generic building blocks (Button, Card, Modal…) that know nothing about the business;
                           layout/ = the app frame (sidebar, header, logo, language switch)
-lib/          PLUMBING    http client, query helpers (useAction), translations (i18n + dict), formatting, shared types
+i18n/         TEXT        ar.ts (every key), en.ts (same keys in English), index.tsx (provider + useI18n)
+styles/       STYLES      globals.css (Tailwind layers); colours and fonts live in tailwind.config.ts
+lib/          PLUMBING    http client, query helpers (useAction), formatting, shared types
 middleware.ts             sends visitors to login or to their own area, using features/auth/roles.ts
 ```
 
@@ -128,6 +131,6 @@ Every business table has a `tenantId`, which the API always takes from the logge
 
 1. **Database:** add the model to `schema.prisma`, then run `npx prisma migrate dev --name <change>`.
 2. **API:** create `src/<feature>/` with `dto`, `service`, `controller`, `module`; add `@Roles` on the controller; register the module in `app.module.ts`.
-3. **Web:** create `src/features/<feature>/` with `types.ts`, `api.ts`, `hooks.ts` (with a `xKeys` object), and `components/` if needed.
+3. **Web:** create `src/features/<feature>/` with `types.ts`, `api.ts`, `hooks.ts` (with a `xKeys` object), and `components/` for UI shared by several pages. UI used by one page goes in that page's `_components/`.
 4. **Page:** add `src/app/<area>/<feature>/page.tsx` that uses only the hooks and components.
-5. **Text:** add Arabic and English strings to `lib/dict.ts`, and any `common.err.<CODE>` error messages.
+5. **Text:** add Arabic and English strings to `i18n/ar.ts` and `i18n/en.ts`, and any `common.err.<CODE>` error messages.

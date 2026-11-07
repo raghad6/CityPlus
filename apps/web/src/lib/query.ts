@@ -3,8 +3,7 @@
 import { useMutation, useQueryClient, type QueryKey } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { ApiError } from './http';
-import { useI18n } from './i18n';
-import type { DictKey } from './dict';
+import { useI18n, type DictKey } from '@/i18n';
 
 /** What a screen can add to an action: the success message and what happens next. */
 export interface ActionOptions<TRes = unknown, TVars = void> {

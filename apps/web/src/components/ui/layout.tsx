@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { cn } from '@/lib/cn';
 
-/** Page building blocks: Card, CardHeader, PageHeader and the Stat tile. */
 
 export function Card({ className, children, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
   return (

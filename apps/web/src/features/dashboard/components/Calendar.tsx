@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, Flag, PlayCircle } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { Card } from '@/components/ui';
 import { STATUS_STYLE } from '@/features/projects/components/StatusBadge';
 import { useCalendar } from '../hooks';

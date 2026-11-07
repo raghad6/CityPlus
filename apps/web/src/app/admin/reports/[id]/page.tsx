@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ArrowRight, Check, X } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { date } from '@/lib/format';
 import { Avatar, Button, Card, CardHeader, Field, Loading, Modal, PageHeader, Textarea } from '@/components/ui';
 import { useApproveReport, useRejectReport, useReport } from '@/features/reports/hooks';

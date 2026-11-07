@@ -68,7 +68,7 @@ Each lands as a new feature folder in both apps, following the checklist in [ARC
 
 | # | Item | Today | Do |
 |---|---|---|---|
-| 6.1 | **Split translations per feature** | One 800-line `lib/dict.ts`. | `features/<name>/i18n.ts` merged at startup; a check that every Arabic key has an English one. |
+| 6.1 | **Split translations per feature** | Two large files, `i18n/ar.ts` and `i18n/en.ts`. | `features/<name>/i18n.ts` merged at startup; a check that every Arabic key has an English one. |
 | 6.2 | **Browser end-to-end tests** | None. | Playwright tests for the main flows (login per role, wizard, approve/reject, Excel import) in both languages. |
 | 6.3 | **UI component catalogue** | Building blocks only visible inside pages. | Storybook for `components/ui`, so the design system can be reviewed on its own. |
 | 6.4 | **Accessibility** | Partly done (labels, roles). | Audit with axe; keyboard navigation in the wizard and modals. |

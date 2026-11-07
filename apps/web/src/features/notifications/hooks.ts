@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAction } from '@/lib/query';
 import { notificationsApi } from './api';
 
-export const notificationKeys = { all: ['notifications'] as const, count: ['notifications', 'count'] as const, list: ['notifications', 'list'] as const };
+const notificationKeys = { all: ['notifications'] as const, count: ['notifications', 'count'] as const, list: ['notifications', 'list'] as const };
 
 /** Unread count, refreshed every minute so new notifications appear without reloading. */
 export function useUnreadCount() {

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { CheckCircle2, ClipboardEdit } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { daysFromNow, date } from '@/lib/format';
 import { Button, Card, Progress } from '@/components/ui';
 import type { StaffProject } from '@/features/dashboard/types';

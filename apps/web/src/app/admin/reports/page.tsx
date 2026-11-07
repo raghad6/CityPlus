@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { ClipboardCheck } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { date } from '@/lib/format';
 import { Avatar, Card, Empty, Loading, PageHeader, Segmented } from '@/components/ui';
 import { useReports } from '@/features/reports/hooks';

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ArrowRight, Search } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { date } from '@/lib/format';
 import { Avatar, Button, Card, CardHeader, ConfirmModal, Field, Input, Loading, PageHeader, Select, Toggle } from '@/components/ui';
 import { useMe } from '@/features/auth/hooks';

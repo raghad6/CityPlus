@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { date } from '@/lib/format';
 import { Avatar, Badge, Button, Card, CardHeader, Field, Input, Loading, PageHeader, Select } from '@/components/ui';
 import { useTenant, useUpdateTenant } from '@/features/platform/hooks';

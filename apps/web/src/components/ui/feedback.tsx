@@ -2,9 +2,8 @@
 
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 
-/** Loading, empty and progress indicators. */
 
 export function Spinner({ className }: { className?: string }) {
   return <Loader2 className={cn('h-5 w-5 animate-spin text-brand-600', className)} />;

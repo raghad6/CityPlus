@@ -10,12 +10,12 @@ import type { Project, ProjectInput } from './types';
 export type WizardMode = 'admin' | 'report';
 
 /** The form keeps every value as a string, exactly as typed. */
-export type ProjectForm = Record<string, string>;
+type ProjectForm = Record<string, string>;
 
 const NUMERIC = ['totalCostK', 'yearCostK', 'spentK', 'localContributionK', 'partnerContributionK', 'completionPercent', 'planYear'];
 
 /** Statuses for which "reasons for non-execution" is mandatory (same rule as the API). */
-export const REASON_REQUIRED = ['NOT_STARTED', 'PARTIAL', 'POSTPONED', 'STOPPED', 'CANCELLED'];
+const REASON_REQUIRED = ['NOT_STARTED', 'PARTIAL', 'POSTPONED', 'STOPPED', 'CANCELLED'];
 
 const PROGRESS_KEYS = [
   'status', 'completionPercent', 'nonExecutionReasons', 'spentK', 'activities', 'achievementLevel', 'kpiName', 'kpiTarget',
@@ -23,7 +23,6 @@ const PROGRESS_KEYS = [
 ];
 const ADMIN_KEYS = ['programName', 'programNumber', 'componentName', 'componentNumber', 'totalCostK', 'yearCostK', 'planYear', 'departmentId', 'startDate', 'dueDate'];
 
-/** Project → form fields. */
 export function toForm(p?: Partial<Project>): ProjectForm {
   const s = (v: unknown) => (v == null ? '' : String(v));
   return {

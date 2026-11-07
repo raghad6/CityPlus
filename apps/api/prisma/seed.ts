@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { PrismaClient, ProjectStatus } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { DEFAULT_DEPARTMENTS } from '../src/platform/default-departments';
@@ -36,14 +35,12 @@ const DURA_PROJECTS: {
 async function main() {
   const hash = (p: string) => bcrypt.hash(p, 10);
 
-  // Platform owner
   await prisma.user.upsert({
     where: { email: 'owner@cityplus.app' },
     update: {},
     create: { name: 'مالك المنصة', email: 'owner@cityplus.app', passwordHash: await hash('Owner@12345'), role: 'SUPER_ADMIN', status: 'ACTIVE' },
   });
 
-  // Municipality: Dura
   const dura = await prisma.tenant.upsert({
     where: { slug: 'dura' },
     update: {},
@@ -99,7 +96,6 @@ async function main() {
           departments: { create: (p.extra ?? []).map((n) => ({ departmentId: depId(n) })) },
         },
       });
-      // Assign staff by department
       const assignees = staffDefs
         .filter((s) => s.status === 'ACTIVE' && (s.dept === p.dept || p.extra?.includes(s.dept)))
         .map((s) => staff[s.email]);

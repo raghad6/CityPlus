@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from '@/i18n';
 import { useChangePassword, useMe, useUpdateProfile } from '../hooks';
 import { Avatar, Badge, Button, Card, CardHeader, Field, Input, Loading, PageHeader } from '@/components/ui';
 
