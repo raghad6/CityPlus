@@ -6,8 +6,6 @@ City+ helps municipalities follow their yearly development-plan projects in one 
 
 It's a multi-municipality platform: each municipality has its own users, departments and projects, and can never see another municipality's data. The interface is Arabic first (right-to-left), with a one-click switch to English.
 
-**More docs:** [Architecture](ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
-
 ---
 
 ## The 3 roles
