@@ -98,19 +98,6 @@ npm run dev              # starts the website on http://localhost:3000
 
 Open **http://localhost:3000** in your browser.
 
-### Signing in
-
-The seed step creates demo accounts you can use right away, one for each role:
-
-| Role | Email | Password |
-|---|---|---|
-| Platform owner | `owner@cityplus.app` | `Owner@12345` |
-| Dura municipality admin | `admin@dura.ps` | `Admin@12345` |
-| Engineering staff | `engineering@dura.ps` | `Staff@12345` |
-
-**New users:** when the platform owner or a municipality admin adds a user, that user signs in with the email and password they were given.
-
-To try the Docker setup without demo data, run `SEED_DEMO=false docker compose up --build`.
 
 ### Viewing the database
 
