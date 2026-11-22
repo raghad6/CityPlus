@@ -23,7 +23,7 @@ export default function TenantPage({ params }: { params: { id: string } }) {
   return (
     <>
       <PageHeader
-        back={<Link href="/platform" className="mb-3 inline-flex items-center gap-1 text-sm text-ink-500 hover:text-ink-800"><ArrowRight className="h-4 w-4 ltr:rotate-180" /> {t('platform.tenants')}</Link>}
+        back={<Link href="/platform-owner" className="mb-3 inline-flex items-center gap-1 text-sm text-ink-500 hover:text-ink-800"><ArrowRight className="h-4 w-4 ltr:rotate-180" /> {t('platform.tenants')}</Link>}
         title={n(data)}
         subtitle={<code>{data.slug}</code>}
         actions={
