@@ -162,18 +162,6 @@ npm run dev              # starts the website on http://localhost:3000
 
 Open **http://localhost:3000** in your browser.
 
-### Signing in
-
-The seed step creates demo accounts you can use right away, one for each role:
-
-| Role | Email | Password |
-|---|---|---|
-| Platform owner | `owner@cityplus.app` | `Owner@12345` |
-| Dura municipality admin | `admin@dura.ps` | `Admin@12345` |
-| Engineering staff | `engineering@dura.ps` | `Staff@12345` |
-
-**New users:** when the platform owner or a municipality admin adds a user, that user signs in with the email and password they were given.
-
 To try the Docker setup without demo data, run `SEED_DEMO=false docker compose up --build`.
 
 ### Viewing the database
@@ -186,6 +174,32 @@ npx prisma studio        # opens http://localhost:5555
 ```
 
 The tables are defined in `apps/api/prisma/schema.prisma`.
+
+### Using a copy of the existing database
+
+The database is not stored in Git. To work with the real data instead of demo data, ask the project owner for `cityplus-database.zip`, then follow Option B with these changes:
+
+1. **Check the file.** It should open without errors:
+
+   ```bash
+   unzip -tq ~/Downloads/cityplus-database.zip
+   ```
+
+2. **Put it in place** before starting Terminal 1. From the project folder:
+
+   ```bash
+   npm --prefix .local-postgres install
+   unzip ~/Downloads/cityplus-database.zip -d .local-postgres
+   ls .local-postgres/data/PG_VERSION    # should exist
+   ```
+
+   If a `.local-postgres/data` folder already exists, delete or rename it first.
+
+3. **Start the database** as usual: `node .local-postgres/start.mjs`
+4. **Start the backend**, but **skip `npm run seed`**, because it would add demo data to the real data.
+5. **Check the data** with `npx prisma studio` (see above), then sign in with an existing account.
+
+This copy only works with the project's local PostgreSQL (`.local-postgres`). Keep the zip private: it contains user accounts and project data.
 
 ### Common problems
 
